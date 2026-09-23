@@ -44,20 +44,30 @@ $ ping -c3 192.168.10.1
 ```
 
 ## Screenshot доказателства
-Качвай снимките в `artefakti/s01-laboratoria/screenshots/` със следните имена:
 
-| Файл | Какво трябва да се вижда |
-|---|---|
-| `01-gw-adresi-i-routing.png` | `gw`, IP адресите на трите интерфейса и routing table |
-| `02-gw-internet.png` | Успешен `ping -c3 8.8.8.8` от `gw` |
-| `03-gw-ip-forwarding.png` | `cat /proc/sys/net/ipv4/ip_forward` връща `1` |
-| `04-srv-adres-i-routing.png` | `srv`, IP адресът `192.168.10.2/24` и default gateway |
-| `05-srv-ping-gw.png` | Успешен `ping -c3 192.168.10.1` от `srv` |
-| `06-virtualbox-topologia.png` | VirtualBox Network settings за LAN1/LAN2 и VM-ите |
-| `07-snapshots.png` | Snapshot `clean-state` на `gw` и `srv` |
+### 1. GW — адреси и routing
 
-## Резултат
-- `gw` и `srv` са с различни hostname-и и IP адреси.
+![GW адреси и routing](./screenshots/01-gw-adresi-i-routing.jpg)
+
+### 2. GW — интернет
+
+![GW интернет тест](./screenshots/02-gw-internet.jpg)
+
+### 3. GW — IPv4 forwarding
+
+![GW IPv4 forwarding](./screenshots/03-gw-ip-forwarding.jpg)
+
+### 4. SRV — адрес и routing
+
+![SRV адрес и routing](./screenshots/04-srv-adres-i-routing.jpg)
+
+### 5. SRV — ping към GW
+
+![SRV ping към GW](./screenshots/05-srv-ping-gw.jpg)
+
+### 6. SRV — ping към GW LAN2
+
+![SRV ping към GW LAN2](./screenshots/06-srv-ping-gw-lan2.jpg)
 - `srv` има успешен ping до `gw`.
 - `gw` има успешен достъп до интернет.
 - IPv4 forwarding на `gw` е включен.
