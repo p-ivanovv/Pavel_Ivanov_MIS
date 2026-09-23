@@ -47,27 +47,27 @@ $ ping -c3 192.168.10.1
 
 ### 1. GW — адреси и routing
 
-![GW адреси и routing](./screenshots/01-gw-adresi-i-routing.jpg)
+![GW адреси и routing](./Screenshots/01-gw-adresi-i-routing.jpg)
 
 ### 2. GW — интернет
 
-![GW интернет тест](./screenshots/02-gw-internet.jpg)
+![GW интернет тест](./Screenshots/02-gw-internet.jpg)
 
 ### 3. GW — IPv4 forwarding
 
-![GW IPv4 forwarding](./screenshots/03-gw-ip-forwarding.jpg)
+![GW IPv4 forwarding](./Screenshots/03-gw-ip-forwarding.jpg)
 
 ### 4. SRV — адрес и routing
 
-![SRV адрес и routing](./screenshots/04-srv-adres-i-routing.jpg)
+![SRV адрес и routing](./Screenshots/04-srv-adres-i-routing.jpg)
 
 ### 5. SRV — ping към GW
 
-![SRV ping към GW](./screenshots/05-srv-ping-gw.jpg)
+![SRV ping към GW](./Screenshots/05-srv-ping-gw.jpg)
 
 ### 6. SRV — ping към GW LAN2
 
-![SRV ping към GW LAN2](./screenshots/06-srv-ping-gw-lan2.jpg)
+![SRV ping към GW LAN2](./Screenshots/06-srv-ping-gw-lan2.jpg)
 - `srv` има успешен ping до `gw`.
 - `gw` има успешен достъп до интернет.
 - IPv4 forwarding на `gw` е включен.
