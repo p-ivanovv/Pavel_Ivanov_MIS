@@ -1,0 +1,21 @@
+# Nmap 7.95 scan initiated Wed Sep 30 16:09:04 2026 as: nmap -sT -sV -p 22,7777 -oN /home/vboxuser/gamestudio-scans/nmap-game-tcp.txt 10.202.0.10
+Nmap scan report for 10.202.0.10 (10.202.0.10)
+Host is up (0.00025s latency).
+
+PORT     STATE  SERVICE VERSION
+22/tcp   closed ssh
+7777/tcp open   cbt?
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port7777-TCP:V=7.95%I=7%D=9/30%Time=6ABD3420%P=x86_64-pc-linux-gnu%r(NU
+SF:LL,1B,"GameStudio\x20Neo\x20test\x20server\n")%r(Socks5,1B,"GameStudio\
+SF:x20Neo\x20test\x20server\n")%r(Arucer,1B,"GameStudio\x20Neo\x20test\x20
+SF:server\n")%r(GenericLines,1B,"GameStudio\x20test\x20server\n")%r
+SF:(RTSPRequest,1B,"GameStudio\x20Neo\x20test\x20server\n")%r(DNSVersionBi
+SF:ndReqTCP,1B,"GameStudio\x20Neo\x20test\x20server\n")%r(DNSStatusRequest
+SF:TCP,1B,"GameStudio\x20Neo\x20test\x20server\n")%r(LDAPBindReq,1B,"GameS
+SF:tudio\x20Neo\x20test\x20server\n")%r(LANDesk-RC,1B,"GameStudio\x20Neo\
+SF:20test\x20server\n")%r(TerminalServer,1B,"GameStudio\x20Neo\x20test\x20server\n")%r(giop,1B,"GameStudio\x20Neo\x20test\x20server\n");
+MAC Address: 08:00:27:BF:17:84 (PCS Systemtechnik/Oracle VirtualBox virtual NIC)
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Wed Sep 30 16:09:04 2026 -- 1 IP address (1 host up) scanned in 0.38 seconds

@@ -1,0 +1,9 @@
+# Nmap 7.95 scan initiated Wed Sep 30 16:06:33 2026 as: nmap -sU -p 7777 -oN /home/vboxuser/gamestudio-scans/nmap-game-udp.txt 10.202.0.10
+Nmap scan report for 10.202.0.10 (10.202.0.10)
+Host is up (0.00024s latency).
+
+PORT     STATE SERVICE
+7777/udp open  cbt
+MAC Address: 08:00:27:BF:17:84 (PCS Systemtechnik/Oracle VirtualBox virtual NIC)
+
+# Nmap done at Wed Sep 30 16:06:33 2026 -- 1 IP address (1 host up) scanned in 0.23 seconds

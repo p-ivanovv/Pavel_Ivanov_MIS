@@ -1,0 +1,8 @@
+# Nmap 7.95 scan initiated Wed Sep 30 16:06:33 2026 as: nmap -sT -p 8080 -oN /home/vboxuser/gamestudio-scans/nmap-web-tcp.txt 10.200.0.1
+Nmap scan report for 10.200.0.1 (10.200.0.1)
+Host is up (0.00011s latency).
+
+PORT     STATE SERVICE
+8080/tcp open  http-proxy
+
+# Nmap done at Wed Sep 30 16:06:33 2026 -- 1 IP address (1 host up) scanned in 0.04 seconds
