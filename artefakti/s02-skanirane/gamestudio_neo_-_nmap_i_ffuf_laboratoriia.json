@@ -1,0 +1,83 @@
+{
+	"name": "GameStudio Neo - Nmap и ffuf лаборатория",
+	"versions": {
+		"attack": "19",
+		"navigator": "5.3.2",
+		"layer": "4.5"
+	},
+	"domain": "enterprise-attack",
+	"description": "Разрешено учебно сканиране в изолирана VirtualBox лаборатория. Nmap провери тестовия Game Server на 10.202.0.10, а ffuf провери тестовия HTTP заместител на Jenkins на 10.200.0.1:8080.",
+	"filters": {
+		"platforms": [
+			"Linux",
+			"IaaS",
+			"Windows",
+			"macOS",
+			"SaaS",
+			"ESXi",
+			"Network Devices",
+			"PRE",
+			"Containers",
+			"Office Suite",
+			"Identity Provider"
+		]
+	},
+	"sorting": 0,
+	"layout": {
+		"layout": "side",
+		"aggregateFunction": "average",
+		"showID": true,
+		"showName": true,
+		"showAggregateScores": false,
+		"countUnscored": false,
+		"expandedSubtechniques": "none"
+	},
+	"hideDisabled": false,
+	"techniques": [
+		{
+			"techniqueID": "T1595",
+			"tactic": "reconnaissance",
+			"color": "",
+			"comment": "",
+			"enabled": true,
+			"metadata": [],
+			"links": [],
+			"showSubtechniques": true
+		},
+		{
+			"techniqueID": "T1595.003",
+			"tactic": "reconnaissance",
+			"score": 1,
+			"color": "",
+			"comment": "ffuf wordlist scan срещу собствения HTTP заместител на 10.200.0.1:8080; открити index.html и builds.txt. Не е реална атака.",
+			"enabled": true,
+			"metadata": [],
+			"links": [],
+			"showSubtechniques": false
+		},
+		{
+			"techniqueID": "T1046",
+			"tactic": "discovery",
+			"score": 1,
+			"color": "#fc3b3b",
+			"comment": "Разрешен лабораторен Nmap тест: 10.202.0.10 — 7777/tcp и 7777/udp open; 22/tcp closed. Проверен е и 10.200.0.1:8080/tcp (open).\n",
+			"enabled": true,
+			"metadata": [],
+			"links": [],
+			"showSubtechniques": false
+		}
+	],
+	"gradient": {
+		"colors": ["#ff6666ff", "#ffe766ff", "#8ec843ff"],
+		"minValue": 0,
+		"maxValue": 1
+	},
+	"legendItems": [{"color": "#8ec843", "label": "Наблюдавано в разрешена лаборатория"}],
+	"metadata": [],
+	"links": [],
+	"showTacticRowBackground": false,
+	"tacticRowBackground": "#dddddd",
+	"selectTechniquesAcrossTactics": false,
+	"selectSubtechniquesWithParent": false,
+	"selectVisibleTechniques": false
+}
