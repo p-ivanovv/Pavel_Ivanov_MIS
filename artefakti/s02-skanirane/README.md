@@ -1,11 +1,11 @@
-# Сесия 2 — Nmap и ffuf
+# Сесия 2 - Nmap и ffuf
 
 ## Сценарий
-GameStudio Neo OOD — лабораторна проверка на тестов Game Server и уеб заместител на Jenkins.
+GameStudio Neo OOD - лабораторна проверка на тестов Game Server и уеб заместител на Jenkins.
 
 ## Обхват
-- `10.202.0.10` — `srv`, лабораторен Game Server заместител.
-- `10.200.0.1` — `gw`, уеб заместител на Jenkins за упражнението.
+- `10.202.0.10` - `srv`, лабораторен Game Server заместител.
+- `10.200.0.1` - `gw`, уеб заместител на Jenkins за упражнението.
 
 ## Изпълнени проверки
 - TCP Nmap: `22/tcp` е `closed`; `7777/tcp` е `open` и връща `GameStudio Neo test server`.

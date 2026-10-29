@@ -60,7 +60,7 @@
 			"tactic": "discovery",
 			"score": 1,
 			"color": "#fc3b3b",
-			"comment": "Разрешен лабораторен Nmap тест: 10.202.0.10 — 7777/tcp и 7777/udp open; 22/tcp closed. Проверен е и 10.200.0.1:8080/tcp (open).\n",
+			"comment": "Разрешен лабораторен Nmap тест: 10.202.0.10 - 7777/tcp и 7777/udp open; 22/tcp closed. Проверен е и 10.200.0.1:8080/tcp (open).\n",
 			"enabled": true,
 			"metadata": [],
 			"links": [],

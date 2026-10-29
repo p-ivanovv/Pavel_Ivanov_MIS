@@ -1,4 +1,4 @@
-# Доказателства — Сесия 1
+# Доказателства - Сесия 1
 
 Този файл пази доказателства, че базовата среда за GameStudio Neo OOD е конфигурирана и работи. Към него се добавят и screenshots от терминалите и VirtualBox.
 
@@ -45,27 +45,27 @@ $ ping -c3 192.168.10.1
 
 ## Screenshot доказателства
 
-### 1. GW — адреси и routing
+### 1. GW - адреси и routing
 
 ![GW адреси и routing](./Screenshots/01-gw-adresi-i-routing.png)
 
-### 2. GW — интернет
+### 2. GW - интернет
 
 ![GW интернет тест](./Screenshots/02-gw-internet.png)
 
-### 3. GW — IPv4 forwarding
+### 3. GW - IPv4 forwarding
 
 ![GW IPv4 forwarding](./Screenshots/03-gw-ip-forwarding.png)
 
-### 4. SRV — адрес и routing
+### 4. SRV - адрес и routing
 
 ![SRV адрес и routing](./Screenshots/04-srv-adres-i-routing.png)
 
-### 5. SRV — ping към GW
+### 5. SRV - ping към GW
 
 ![SRV ping към GW](./Screenshots/05-srv-ping-gw.png)
 
-### 6. SRV — ping към GW LAN2
+### 6. SRV - ping към GW LAN2
 
 ![SRV ping към GW LAN2](./Screenshots/06-srv-ping-gw-lan2.png)
 - `srv` има успешен ping до `gw`.

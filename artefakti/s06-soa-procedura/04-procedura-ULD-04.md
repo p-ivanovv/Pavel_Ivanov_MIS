@@ -1,11 +1,11 @@
-# ULD-04 — SSH само с ключ, без root и пароли
+# ULD-04 - SSH само с ключ, без root и пароли
 
 ## Заглавна част
 
 | Поле | Стойност |
 | --- | --- |
 | Фирма | GameStudio Neo OOD |
-| Реализира контрол | ULD-04 — предложен допълнителен контрол по план R02, не GSN-04 |
+| Реализира контрол | ULD-04 - предложен допълнителен контрол по план R02, не GSN-04 |
 | Annex A | 8.5, 8.2; подпомага 8.9 и 5.37 |
 | R-ID | R02 (16), R03 (15), R12 (8) |
 | Изпълнява се от | DevOps инженер |
@@ -25,7 +25,7 @@ export SRV ADMIN
 
 Ако SSH липсва, от конзолата на srv инсталирай openssh-server и стартирай ssh.service. Ако няма ключ на gw, създай отделен ключ с ssh-keygen -t ed25519 -f ~/.ssh/mis_h06 и копирай само публичния ключ чрез ssh-copy-id -i ~/.ssh/mis_h06.pub "$ADMIN@$SRV". Не презаписвай съществуващ ключ. Частният ключ не се качва в Git. Провери fingerprint на сървъра през конзолата преди първо доверяване. Подготовката на ключа се извършва ПРЕДИ забрана на паролите.
 
-## 1. Положителен тест преди промяната — от gw
+## 1. Положителен тест преди промяната - от gw
 
 ```bash
 ssh -i ~/.ssh/mis_h06 -o IdentitiesOnly=yes -o ControlMaster=no -o ControlPath=none -o PreferredAuthentications=publickey -o PasswordAuthentication=no -o KbdInteractiveAuthentication=no "$ADMIN@$SRV" true
@@ -34,7 +34,7 @@ printf 'rc=%s\n' "$?"
 
 Очаквано: код 0; допуска се локална passphrase за ключа, но не парола за отдалечения акаунт. При друг код спри. Отвори две отделни SSH сесии от gw към srv с този ключ. В първата провери sudo -v и я остави отворена до края като резервна. Във втората изпълни следващите стъпки.
 
-## 2. Състояние преди — на srv
+## 2. Състояние преди - на srv
 
 ```bash
 export D="$HOME/artefakti/s06-soa-procedura"
@@ -44,7 +44,7 @@ sudo systemctl is-active ssh
 sudo test ! -e /etc/ssh/sshd_config.d/10-uld04.conf
 ```
 
-Очаквано: нерутов акаунт, active услуга, последният test връща 0. Ако файлът съществува, спри — не го презаписвай.
+Очаквано: нерутов акаунт, active услуга, последният test връща 0. Ако файлът съществува, спри - не го презаписвай.
 
 ```bash
 sudo tar -czf /root/ssh-pre-h06.tgz /etc/ssh
@@ -56,7 +56,7 @@ sudo ls -l /etc/ssh/sshd_config.d/
 
 Очаквано: непразен predi.txt и глобален Include за sshd_config.d/*.conf преди конфликтни настройки. При липсващ Include, неразгледан Match или конфликтни по-ранни стойности спри и актуализирай процедурата с преподавателя. Архивът в /root съдържа чувствителни ключове и не се качва в Git.
 
-## 3. Настройка и синтаксис — на srv
+## 3. Настройка и синтаксис - на srv
 
 ```bash
 printf '%s\n' 'PermitRootLogin no' 'PasswordAuthentication no' 'KbdInteractiveAuthentication no' 'PubkeyAuthentication yes' | sudo tee /etc/ssh/sshd_config.d/10-uld04.conf >/dev/null
@@ -66,7 +66,7 @@ sudo /usr/sbin/sshd -t
 
 Очаквано: sshd -t няма изход и връща 0. При грешка не прилагай и изпълни rollback.
 
-## 4. Ефективни стойности и прилагане — на srv
+## 4. Ефективни стойности и прилагане - на srv
 
 ```bash
 read -r CLIENT_IP CLIENT_PORT SERVER_IP SERVER_PORT <<< "$SSH_CONNECTION"
@@ -85,7 +85,7 @@ sudo systemctl is-active ssh
 
 Очаквано: reload е успешен, услугата е active, резервната сесия работи. sshd -T прочита конфигурацията от файловете, не паметта на работещия демон: изискват се и новите връзки по-долу.
 
-## 5. Нови тестове — от gw
+## 5. Нови тестове - от gw
 
 Отвори НОВ терминал на gw и въведи отново SRV и ADMIN чрез read командите. Не използвай терминал, който в момента е SSH сесия върху srv.
 
