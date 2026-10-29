@@ -1,0 +1,49 @@
+name: Normalize em dashes
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/normalize-em-dashes.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace only U+2014 in tracked UTF-8 text files
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import pathlib
+          import subprocess
+          paths = subprocess.check_output(['git', 'ls-files', '-z']).split(b'\0')
+          old = chr(0x2014).encode('utf-8')
+          for raw in paths:
+              if not raw:
+                  continue
+              path = pathlib.Path(raw.decode('utf-8'))
+              if path.is_symlink() or not path.is_file():
+                  continue
+              data = path.read_bytes()
+              if b'\0' in data:
+                  continue
+              try:
+                  data.decode('utf-8')
+              except UnicodeDecodeError:
+                  continue
+              count = data.count(old)
+              if count:
+                  path.write_bytes(data.replace(old, b'-'))
+                  print(f'{path}: {count} replacements')
+          PY
+          if git diff --quiet; then
+            echo 'No em dashes found.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -u
+          git commit -m 'style: replace em dashes with ASCII hyphens'
+          git push origin HEAD:main
