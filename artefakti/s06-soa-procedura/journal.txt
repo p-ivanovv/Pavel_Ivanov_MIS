@@ -1,0 +1,38 @@
+Nov 04 15:54:47 srv sshd-session[4665]: Connection closed by 10.202.0.1 port 33074 [preauth]
+Nov 04 15:56:19 srv sshd-session[4669]: Connection closed by 10.202.0.1 port 43052 [preauth]
+Nov 04 15:56:30 srv sshd-session[4672]: Accepted password for vboxuser from 10.202.0.1 port 55932 ssh2
+Nov 04 15:56:30 srv sshd-session[4672]: pam_unix(sshd:session): session opened for user vboxuser(uid=1000) by vboxuser(uid=0)
+Nov 04 15:58:54 srv sshd-session[4746]: Accepted password for vboxuser from 10.202.0.10 port 34150 ssh2
+Nov 04 15:58:54 srv sshd-session[4746]: pam_unix(sshd:session): session opened for user vboxuser(uid=1000) by vboxuser(uid=0)
+Nov 04 16:00:02 srv sshd-session[4845]: Connection closed by authenticating user vboxuser 10.202.0.10 port 59990 [preauth]
+Nov 04 16:00:03 srv sshd-session[4852]: Connection closed by authenticating user vboxuser 10.202.0.10 port 60002 [preauth]
+Nov 04 16:00:06 srv sshd-session[4864]: Accepted password for vboxuser from 10.202.0.10 port 60006 ssh2
+Nov 04 16:00:06 srv sshd-session[4864]: pam_unix(sshd:session): session opened for user vboxuser(uid=1000) by vboxuser(uid=0)
+Nov 04 16:00:06 srv sshd-session[4864]: pam_unix(sshd:session): session closed for user vboxuser
+Nov 04 16:00:23 srv sshd-session[4887]: Accepted publickey for vboxuser from 10.202.0.10 port 34236 ssh2: ED25519 SHA256:qGUDqVL1J0Nohv03Ae4GTo4ZEgBJpm2uWirfmyF2FWA
+Nov 04 16:00:23 srv sshd-session[4887]: pam_unix(sshd:session): session opened for user vboxuser(uid=1000) by vboxuser(uid=0)
+Nov 04 16:00:23 srv sshd-session[4887]: pam_unix(sshd:session): session closed for user vboxuser
+Nov 04 16:01:41 srv sshd-session[4906]: Accepted publickey for vboxuser from 10.202.0.10 port 58724 ssh2: ED25519 SHA256:qGUDqVL1J0Nohv03Ae4GTo4ZEgBJpm2uWirfmyF2FWA
+Nov 04 16:01:41 srv sshd-session[4906]: pam_unix(sshd:session): session opened for user vboxuser(uid=1000) by vboxuser(uid=0)
+Nov 04 16:01:41 srv sshd-session[4906]: pam_unix(sshd:session): session closed for user vboxuser
+Nov 04 16:04:29 srv sshd-session[4925]: Connection closed by authenticating user vboxuser 10.202.0.1 port 53312 [preauth]
+Nov 04 16:04:29 srv sshd-session[4927]: Connection closed by authenticating user vboxuser 10.202.0.1 port 53328 [preauth]
+Nov 04 16:04:31 srv sshd-session[4929]: Accepted password for vboxuser from 10.202.0.1 port 53330 ssh2
+Nov 04 16:04:32 srv sshd-session[4929]: pam_unix(sshd:session): session opened for user vboxuser(uid=1000) by vboxuser(uid=0)
+Nov 04 16:04:32 srv sshd-session[4929]: pam_unix(sshd:session): session closed for user vboxuser
+Nov 04 16:04:38 srv sshd-session[4946]: Accepted publickey for vboxuser from 10.202.0.1 port 32820 ssh2: ED25519 SHA256:EjsnQkHbUvs9rGPwBzPLJLrWo1VExahmJOp1qBxXIUo
+Nov 04 16:04:38 srv sshd-session[4946]: pam_unix(sshd:session): session opened for user vboxuser(uid=1000) by vboxuser(uid=0)
+Nov 04 16:04:38 srv sshd-session[4946]: pam_unix(sshd:session): session closed for user vboxuser
+Nov 04 16:12:11 srv sshd-session[4988]: Accepted publickey for vboxuser from 10.202.0.1 port 56094 ssh2: ED25519 SHA256:EjsnQkHbUvs9rGPwBzPLJLrWo1VExahmJOp1qBxXIUo
+Nov 04 16:12:11 srv sshd-session[4988]: pam_unix(sshd:session): session opened for user vboxuser(uid=1000) by vboxuser(uid=0)
+Nov 04 16:17:18 srv systemd[1]: Reloading ssh.service - OpenBSD Secure Shell server...
+Nov 04 16:17:18 srv sshd[3914]: Received SIGHUP; restarting.
+Nov 04 16:17:18 srv systemd[1]: Reloaded ssh.service - OpenBSD Secure Shell server.
+Nov 04 16:17:18 srv sshd[3914]: Server listening on 0.0.0.0 port 22.
+Nov 04 16:17:18 srv sshd[3914]: Server listening on :: port 22.
+Nov 04 16:19:36 srv sshd-session[5144]: Accepted publickey for vboxuser from 10.202.0.1 port 55312 ssh2: ED25519 SHA256:EjsnQkHbUvs9rGPwBzPLJLrWo1VExahmJOp1qBxXIUo
+Nov 04 16:19:36 srv sshd-session[5144]: pam_unix(sshd:session): session opened for user vboxuser(uid=1000) by vboxuser(uid=0)
+Nov 04 16:19:36 srv sshd-session[5144]: pam_unix(sshd:session): session closed for user vboxuser
+Nov 04 16:20:49 srv sshd-session[5158]: Connection closed by authenticating user vboxuser 10.202.0.1 port 48502 [preauth]
+Nov 04 16:20:49 srv sshd-session[5160]: Connection closed by authenticating user vboxuser 10.202.0.1 port 48504 [preauth]
+Nov 04 16:20:49 srv sshd-session[5162]: Connection closed by authenticating user root 10.202.0.1 port 48512 [preauth]
