@@ -1,0 +1,11 @@
+2026-11-04T16:21:01+00:00
+gw
+=== TEST: password ===
+vboxuser@10.202.0.10: Permission denied (publickey).
+password_rc=255
+=== TEST: keyboard-interactive ===
+vboxuser@10.202.0.10: Permission denied (publickey).
+keyboard_rc=255
+=== TEST: root ===
+root@10.202.0.10: Permission denied (publickey).
+root_rc=255

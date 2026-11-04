@@ -1,0 +1,6 @@
+2026-11-04T16:24:26+00:00
+srv
+permitrootlogin no
+pubkeyauthentication yes
+passwordauthentication no
+kbdinteractiveauthentication no
