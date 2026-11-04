@@ -1,168 +1,90 @@
-# ULD-04 - SSH само с ключ, без root и пароли
+МРЕЖОВА И ИНФОРМАЦИОННА СИГУРНОСТ · шаблон 04-procedura
 
-## Заглавна част
+Процедура: ULD-04 - SSH само с ключ, без root и пароли
+
 
 | Поле | Стойност |
 | --- | --- |
-| Фирма | GameStudio Neo OOD |
-| Реализира контрол | ULD-04 - предложен допълнителен контрол по план R02, не GSN-04 |
+| Реализира контрол | ULD-04 - лабораторна реализация |
 | Annex A | 8.5, 8.2; подпомага 8.9 и 5.37 |
-| R-ID | R02 (16), R03 (15), R12 (8) |
+| R-ID | R-GSN-03 (12), активи A-GSN-05 и A-GSN-09 от artefakti/s04-risk/. Лабораторният srv е заместител, не фирмено внедряване. |
 | Изпълнява се от | DevOps инженер |
-| Честота | При първоначална настройка и SSH промяна; преглед месечно до 5-о число |
-| Версия и дата | 1.0, 29.10.2026 |
-| Статус | Подготвена; изпълнение и проверка предстоят |
+| Честота | Първоначална настройка, след SSH промяна; месечен преглед до 5-о число (предложен срок) |
+| Версия, дата | 1.2, 04.11.2026 г. |
 
-## Обхват и предусловия
+Предусловия
 
-Лабораторен Debian srv с ssh.service и нерутов sudo акаунт. Не внедрява firewall, Jenkins, MFA или fail2ban. Не променя продукционната DMZ. Преди всяка промяна: snapshot pre-h06 на srv от VirtualBox и достъп до конзолата. На srv установи реалните акаунт и IP с whoami и ip -br addr. На gw въведи реалните стойности:
+| Какво | Стойност |
+| --- | --- |
+| Достъп | Нерутов vboxuser със sudo на srv; локална VirtualBox конзола. |
+| Инструменти | Debian srv 10.202.0.10 с openssh-server; gw 10.202.0.1 с SSH клиент и ключ ~/.ssh/mis_h06. |
+| Снапшот преди започване | pre-h06 или реално използваното pre-h06-key-working; името се проверява във VirtualBox. |
+| Втора сесия | От gw: ssh -i ~/.ssh/mis_h06 -o IdentitiesOnly=yes vboxuser@10.202.0.10; провери sudo -v и остави отворена до успешни тестове. |
 
-```bash
-read -r -p 'IP/hostname на srv: ' SRV
-read -r -p 'Нерутов sudo акаунт на srv: ' ADMIN
-export SRV ADMIN
-```
+Стъпки
 
-Ако SSH липсва, от конзолата на srv инсталирай openssh-server и стартирай ssh.service. Ако няма ключ на gw, създай отделен ключ с ssh-keygen -t ed25519 -f ~/.ssh/mis_h06 и копирай само публичния ключ чрез ssh-copy-id -i ~/.ssh/mis_h06.pub "$ADMIN@$SRV". Не презаписвай съществуващ ключ. Частният ключ не се качва в Git. Провери fingerprint на сървъра през конзолата преди първо доверяване. Подготовката на ключа се извършва ПРЕДИ забрана на паролите.
 
-## 1. Положителен тест преди промяната - от gw
+| # | Действие | Команда | Очакван резултат |
+| --- | --- | --- | --- |
+| 1 | Провери клиента | На gw: hostname; ip -br -4 addr | gw; адрес 10.202.0.1. При srv спри и отвори нов локален терминал. |
+| 2 | Провери ключа преди промяната | На gw: ssh -i ~/.ssh/mis_h06 -o IdentitiesOnly=yes -o ControlMaster=no -o ControlPath=none -o PreferredAuthentications=publickey -o PasswordAuthentication=no -o KbdInteractiveAuthentication=no vboxuser@10.202.0.10 true; echo $? | 0. Passphrase на ключа е допустима; парола за srv не е. |
+| 3 | Запиши преди | На srv: mkdir -p ~/artefakti/s06-soa-procedura<br>{ date -Is; hostname; sudo /usr/sbin/sshd -T; systemctl is-active ssh; } > ~/artefakti/s06-soa-procedura/predi.txt 2>&1 | Непразен файл от srv. Не презаписвай историческото predi.txt при повторен тест; използвай нова папка. |
+| 4 | Провери включване и конфликти | На srv: sudo grep -nE "^[[:space:]]*(Include\|Match\|PermitRootLogin\|PasswordAuthentication\|KbdInteractiveAuthentication\|PubkeyAuthentication)" /etc/ssh/sshd_config<br>sudo ls -l /etc/ssh/sshd_config.d/ | Include за *.conf преди конфликтни настройки. При Match/по-ранна конфликтна стойност или съществуващ 10-uld04.conf спри за преглед; не презаписвай. |
+| 5 | Създай drop-in | На srv: printf "%s\n" "PermitRootLogin no" "PasswordAuthentication no" "KbdInteractiveAuthentication no" "PubkeyAuthentication yes" \| sudo tee /etc/ssh/sshd_config.d/10-uld04.conf >/dev/null<br>sudo chmod 644 /etc/ssh/sshd_config.d/10-uld04.conf | Файл с четири директиви. |
+| 6 | Синтаксис и стойности | На srv: sudo /usr/sbin/sshd -t<br>sudo /usr/sbin/sshd -T \| grep -E "^(permitrootlogin\|passwordauthentication\|kbdinteractiveauthentication\|pubkeyauthentication) " | Без синтактична грешка; no, no, no и yes за pubkey. При отклонение спри без reload. |
+| 7 | Приложи | На srv: sudo systemctl reload ssh<br>systemctl is-active ssh | active; резервната сесия остава достъпна. |
+| 8 | Запиши след | На srv: { date -Is; hostname; sudo /usr/sbin/sshd -T; systemctl is-active ssh; } > ~/artefakti/s06-soa-procedura/sled.txt 2>&1 | Стойностите след промяната са записани; sshd -T чете конфигурацията, затова следват реални нови връзки. |
 
-```bash
-ssh -i ~/.ssh/mis_h06 -o IdentitiesOnly=yes -o ControlMaster=no -o ControlPath=none -o PreferredAuthentications=publickey -o PasswordAuthentication=no -o KbdInteractiveAuthentication=no "$ADMIN@$SRV" true
-printf 'rc=%s\n' "$?"
-```
+Проверка
 
-Очаквано: код 0; допуска се локална passphrase за ключа, но не парола за отдалечения акаунт. При друг код спри. Отвори две отделни SSH сесии от gw към srv с този ключ. В първата провери sudo -v и я остави отворена до края като резервна. Във втората изпълни следващите стъпки.
+Положителна (разрешеното работи):
 
-## 2. Състояние преди - на srv
+На gw, нов терминал:
+mkdir -p ~/artefakti/s06-soa-procedura
+{ date -Is; hostname; ssh -i ~/.ssh/mis_h06 -o IdentitiesOnly=yes -o ControlMaster=no -o ControlPath=none -o PreferredAuthentications=publickey -o PasswordAuthentication=no -o KbdInteractiveAuthentication=no vboxuser@10.202.0.10 "hostname; whoami"; echo "positive_rc=$?"; } > ~/artefakti/s06-soa-procedura/positive.txt 2>&1
+Очаквано: gw, srv, vboxuser, positive_rc=0.
 
-```bash
-export D="$HOME/artefakti/s06-soa-procedura"
-mkdir -p "$D"
-test "$(id -u)" -ne 0 && sudo -v
-sudo systemctl is-active ssh
-sudo test ! -e /etc/ssh/sshd_config.d/10-uld04.conf
-```
+Отрицателна (забраненото се отказва):
 
-Очаквано: нерутов акаунт, active услуга, последният test връща 0. Ако файлът съществува, спри - не го презаписвай.
+На gw, нови връзки, не резервната сесия:
+{ date -Is; hostname;
+ echo "TEST password"; ssh -o ControlMaster=no -o ControlPath=none -o ConnectTimeout=10 -o PubkeyAuthentication=no -o KbdInteractiveAuthentication=no -o PreferredAuthentications=password vboxuser@10.202.0.10 true; echo "password_rc=$?";
+ echo "TEST keyboard-interactive"; ssh -o ControlMaster=no -o ControlPath=none -o ConnectTimeout=10 -o PubkeyAuthentication=no -o PasswordAuthentication=no -o PreferredAuthentications=keyboard-interactive vboxuser@10.202.0.10 true; echo "keyboard_rc=$?";
+ echo "TEST root"; ssh -i ~/.ssh/mis_h06 -o IdentitiesOnly=yes -o ControlMaster=no -o ControlPath=none -o ConnectTimeout=10 -o PreferredAuthentications=publickey -o PasswordAuthentication=no -o KbdInteractiveAuthentication=no root@10.202.0.10 true; echo "root_rc=$?";
+} > ~/artefakti/s06-soa-procedura/otkaz.txt 2>&1
+Очаквано: Permission denied (publickey), код 255 за всеки тест. Timeout, refused или host-key грешка не са доказателство. При поискана отдалечена парола прекрати с Ctrl+C и запиши отклонение.
+На srv: sudo /usr/sbin/sshd -T -C user=root,addr=10.202.0.1,host=gw,laddr=10.202.0.10,lport=22 | grep -E "^(permitrootlogin|passwordauthentication|kbdinteractiveauthentication|pubkeyauthentication) "
+Запиши с date -Is и hostname в root-settings.txt. Root отказът сам не доказва забрана, защото ключът не е разрешен за root; съпостави с permitrootlogin no и журнала.
 
-```bash
-sudo tar -czf /root/ssh-pre-h06.tgz /etc/ssh
-sudo chmod 600 /root/ssh-pre-h06.tgz
-{ date -Is; hostname; id; sudo /usr/sbin/sshd -T; sudo systemctl status ssh --no-pager; } > "$D/predi.txt" 2>&1
-sudo grep -nE '^[[:space:]]*(Include|Match|PermitRootLogin|PasswordAuthentication|KbdInteractiveAuthentication|PubkeyAuthentication)' /etc/ssh/sshd_config
-sudo ls -l /etc/ssh/sshd_config.d/
-```
+При отклонение
 
-Очаквано: непразен predi.txt и глобален Include за sshd_config.d/*.conf преди конфликтни настройки. При липсващ Include, неразгледан Match или конфликтни по-ранни стойности спри и актуализирай процедурата с преподавателя. Архивът в /root съдържа чувствителни ключове и не се качва в Git.
+При неочакван резултат спри веднага. Запиши отклонението и уведоми преподавателя/отговорния DevOps до 15 минути (предложен срок). При неуспешен разрешен вход или успешен забранен вход не отчитай контрол като успешно проверен.
 
-## 3. Настройка и синтаксис - на srv
-
-```bash
-printf '%s\n' 'PermitRootLogin no' 'PasswordAuthentication no' 'KbdInteractiveAuthentication no' 'PubkeyAuthentication yes' | sudo tee /etc/ssh/sshd_config.d/10-uld04.conf >/dev/null
-sudo chmod 644 /etc/ssh/sshd_config.d/10-uld04.conf
-sudo /usr/sbin/sshd -t
-```
-
-Очаквано: sshd -t няма изход и връща 0. При грешка не прилагай и изпълни rollback.
-
-## 4. Ефективни стойности и прилагане - на srv
-
-```bash
-read -r CLIENT_IP CLIENT_PORT SERVER_IP SERVER_PORT <<< "$SSH_CONNECTION"
-export CLIENT_IP SERVER_IP SERVER_PORT
-sudo /usr/sbin/sshd -T -C "user=$(id -un),addr=$CLIENT_IP,host=$CLIENT_IP,laddr=$SERVER_IP,lport=$SERVER_PORT" | grep -E '^(permitrootlogin|passwordauthentication|kbdinteractiveauthentication|pubkeyauthentication) '
-sudo /usr/sbin/sshd -T -C "user=root,addr=$CLIENT_IP,host=$CLIENT_IP,laddr=$SERVER_IP,lport=$SERVER_PORT" | grep -E '^(permitrootlogin|passwordauthentication|kbdinteractiveauthentication|pubkeyauthentication) '
-```
-
-Очаквано и за двата профила: permitrootlogin no; passwordauthentication no; kbdinteractiveauthentication no; pubkeyauthentication yes. При друго спри. При Match Host IP в host не замества анализа на реалното разрешено име на клиента.
-
-```bash
-sudo systemctl reload ssh
-sudo systemctl is-active ssh
-{ date -Is; hostname; sudo /usr/sbin/sshd -T; sudo /usr/sbin/sshd -T -C "user=$(id -un),addr=$CLIENT_IP,host=$CLIENT_IP,laddr=$SERVER_IP,lport=$SERVER_PORT"; sudo /usr/sbin/sshd -T -C "user=root,addr=$CLIENT_IP,host=$CLIENT_IP,laddr=$SERVER_IP,lport=$SERVER_PORT"; sudo systemctl status ssh --no-pager; } > "$D/sled.txt" 2>&1
-```
-
-Очаквано: reload е успешен, услугата е active, резервната сесия работи. sshd -T прочита конфигурацията от файловете, не паметта на работещия демон: изискват се и новите връзки по-долу.
-
-## 5. Нови тестове - от gw
-
-Отвори НОВ терминал на gw и въведи отново SRV и ADMIN чрез read командите. Не използвай терминал, който в момента е SSH сесия върху srv.
-
-```bash
-export G="$HOME/artefakti/s06-soa-procedura"
-mkdir -p "$G"
-{ date -Is; ssh -i ~/.ssh/mis_h06 -o IdentitiesOnly=yes -o ControlMaster=no -o ControlPath=none -o PreferredAuthentications=publickey -o PasswordAuthentication=no -o KbdInteractiveAuthentication=no "$ADMIN@$SRV" true; printf 'positive_rc=%s\n' "$?"; } > "$G/positive.txt" 2>&1
-cat "$G/positive.txt"
-```
-
-Очаквано: positive_rc=0. Провери и sudo -v в нов интерактивен вход с ключ.
-
-```bash
-{
- date -Is
- echo 'TEST password'
- ssh -o ControlMaster=no -o ControlPath=none -o ConnectTimeout=10 -o PubkeyAuthentication=no -o KbdInteractiveAuthentication=no -o PreferredAuthentications=password "$ADMIN@$SRV" true
- printf 'password_rc=%s\n' "$?"
- echo 'TEST keyboard-interactive'
- ssh -o ControlMaster=no -o ControlPath=none -o ConnectTimeout=10 -o PubkeyAuthentication=no -o PasswordAuthentication=no -o PreferredAuthentications=keyboard-interactive "$ADMIN@$SRV" true
- printf 'keyboard_rc=%s\n' "$?"
- echo 'TEST root'
- ssh -i ~/.ssh/mis_h06 -o IdentitiesOnly=yes -o ControlMaster=no -o ControlPath=none -o ConnectTimeout=10 -o PreferredAuthentications=publickey -o PasswordAuthentication=no -o KbdInteractiveAuthentication=no root@"$SRV" true
- printf 'root_rc=%s\n' "$?"
-} > "$G/otkaz.txt" 2>&1
-cat "$G/otkaz.txt"
-```
-
-Очаквано: отказ за трите теста, обикновено Permission denied (publickey), код 255. Timeout, connection refused и host-key грешка не доказват забранена автентикация. Ако се поиска отдалечена парола, прекрати и запиши отклонение. Не изключвай проверката на host ключа.
-
-Отказ с ключ, който никога не е бил разрешен за root, сам по себе си не доказва PermitRootLogin no. Съпоставя се с root профила от sshd -T -C и журнала. Процедурата не добавя нов root ключ само за теста.
-
-## 6. Журнал и копиране
-
-На srv след тестовете:
-
-```bash
-sudo journalctl -u ssh --since '30 min ago' --no-pager > "$D/journal.txt"
-```
-
-На gw:
-
-```bash
-scp -i ~/.ssh/mis_h06 -o IdentitiesOnly=yes "$ADMIN@$SRV:artefakti/s06-soa-procedura/predi.txt" "$G/"
-scp -i ~/.ssh/mis_h06 -o IdentitiesOnly=yes "$ADMIN@$SRV:artefakti/s06-soa-procedura/sled.txt" "$G/"
-scp -i ~/.ssh/mis_h06 -o IdentitiesOnly=yes "$ADMIN@$SRV:artefakti/s06-soa-procedura/journal.txt" "$G/"
-```
-
-Очаквано: пет непразни файла за същия srv и тестов период. При празен журнал провери logging backend с преподавателя.
-
-## При отклонение
-
-При грешка, различни стойности, неуспешен разрешен вход или успешен забранен вход спри веднага. Запази резултата в deviation.txt. Уведоми DevOps инженера/преподавателя до 15 минути. Върни промяната от резервната сесия. Статусът не става внедрен преди успешни тестове.
-
-## Връщане назад
+Възстановяване (Rollback)
 
 От резервната сесия или конзолата на srv:
-
-```bash
 sudo rm -- /etc/ssh/sshd_config.d/10-uld04.conf
 sudo /usr/sbin/sshd -t && sudo systemctl reload ssh
-sudo systemctl is-active ssh
-```
+systemctl is-active ssh
+Очаквано active и старо поведение на новите връзки. Ако достъпът не може да се възстанови през конзолата, върни pre-h06. Snapshot restore отменя и по-късни промени; запази доказателствата извън VM предварително.
 
-Очаквано: active и предишното поведение на новите връзки. Ако няма достъп, използвай VirtualBox конзолата; при невъзможност върни snapshot pre-h06. Връщането на snapshot отменя и други по-късни VM промени. Запази доказателствата извън VM предварително.
+Запис
 
-## Запис и приемане
+На srv: sudo journalctl -u ssh --since "30 min ago" --no-pager > ~/artefakti/s06-soa-procedura/journal.txt
+Съхранявай predi.txt, sled.txt, positive.txt, otkaz.txt, root-settings.txt и journal.txt в artefakti/s06-soa-procedura/ на репото след преглед за тайни. Предложен срок: 12 месеца, не е одобрен. Частни ключове и пароли не се качват. Реалните тестове от 04.11.2026 са успешни; peer review не е извършен. Това доказва лабораторния srv, не цялостно фирмено внедряване.
 
-Реалните predi.txt, sled.txt, otkaz.txt, positive.txt и journal.txt се поставят в artefakti/s06-soa-procedura/ на клонираното хранилище. Предложено съхранение: 12 месеца; очаква одобрение. Не качвай частни ключове, пароли или /root/ssh-pre-h06.tgz. След peer review отрази само доказания обхват в SoA: SSH не доказва цялостна фирмена реализация на 8.2, 8.9 и 5.37.
-
-## Проверка от съученик
+Проверка от съученик
 
 | Поле | Стойност |
 | --- | --- |
-| Изпълнил и дата | Предстои |
-| Засякъл на стъпка | Не е проверено |
-| Неясно | Не е проверено |
-| Положителен тест | Няма реален резултат |
-| Отрицателен тест | Няма реален резултат |
-| Поправено след проверката | Предстои |
+| Изпълнил, дата | Не е извършена проверка от съученик; не се попълва сега. |
+| Засякъл на стъпка | Не е извършена проверка от съученик; не се попълва сега. |
+| Неясно | Не е извършена проверка от съученик; не се попълва сега. |
+| Отрицателният тест даде | Не е извършена проверка от съученик; не се попълва сега. |
+| Поправено след проверката | Не е извършена проверка от съученик; не се попълва сега. |
+
+
+Автор на документа: Павел Иванов
+
+Статус след съгласуване: лабораторният ULD-04 е технически проверен; фирмената мярка за R-GSN-03 остава планирана. Проверка от съученик не е извършена. Името и датата на автора са запазени от предоставения документ.
+
