@@ -1,0 +1,73 @@
+#!/usr/sbin/nft -f
+# МИС, Час 9. Защитна стена на gw за GAMESTUDIO
+# Генерирано от postroi-segmenti.sh skelet на 2026-11-25. Попълнени правилата за GameStudio NEO.
+# Ред на работа: матрица на потоците -> правило с коментар "изискване N" -> proba разрешено и забранено -> zhurnal.
+# Прилагане: ./postroi-segmenti.sh probvai moi.nft   (връща старото след 60 s без потвърждение)
+
+flush ruleset
+
+define MGMT = "enp0s3"      # интерфейсът, през който управляваш gw (ssh от лаптопа)
+define IF_HQ         = "v-hq"
+define IF_VTARNOVO   = "v-vtarnovo"
+define IF_GABROVO    = "v-gabrovo"
+define IF_INET       = "v-inet"
+define NET_HQ        = 10.210.0.0/24
+define NET_VTARNOVO  = 10.211.0.0/24
+define NET_GABROVO   = 10.212.0.0/24
+define NET_INET      = 203.0.113.0/24
+
+table inet firma {
+    chain input {
+        # трафик КЪМ самия gw
+        type filter hook input priority filter; policy drop;
+        ct state established,related accept
+        ct state invalid drop
+        iifname "lo" accept
+        iifname $MGMT tcp dport 22 accept comment "управление на gw"
+        counter log prefix "[GAMESTUDIO-IN-DROP] "
+    }
+
+    chain forward {
+        # трафик ПРЕЗ gw, между сегментите: тук е сегментацията
+        type filter hook forward priority filter; policy drop;
+        ct state established,related accept
+        ct state invalid drop
+
+        # изискване 1: CI/CD (hq) деплойва към Game Server (SSH 22 и 7777)
+        iifname $IF_HQ ip saddr $NET_HQ ip daddr 10.212.0.10 tcp dport { 22, 7777 } accept comment "изискване 1: CI/CD към Game Server"
+
+        # изискване 2: QA клиентите (gabrovo) тестват Game Server (7777 TCP и UDP)
+        # бележка: QA клиентът и Game Server са в една мрежа, затова не минава през gw
+
+        # изискване 3: Разработчиците от В. Търново имат достъп до Jenkins (8080) само за четене (GET)
+        # бележка: 'Само GET' е ниво 7, пакетен филтър не го вижда
+        iifname $IF_VTARNOVO ip saddr $NET_VTARNOVO ip daddr 10.210.0.10 tcp dport 8080 accept comment "изискване 3: dev към Jenkins (GET, ниво 7)"
+
+        # изискване 4: Game Server не може да комуникира с Dev мрежите (10.210.0.0/24, 10.211.0.0/24)
+        iifname $IF_GABROVO ip saddr 10.212.0.10 ip daddr $NET_HQ counter log prefix "[GAMESTUDIO-GS-TO-HQ-DROP] " drop comment "изискване 4: Game Server към HQ"
+        iifname $IF_GABROVO ip saddr 10.212.0.10 ip daddr $NET_VTARNOVO counter log prefix "[GAMESTUDIO-GS-TO-DEV-DROP] " drop comment "изискване 4: Game Server към Dev"
+
+        # изискване 5: DNS (UDP/TCP 53) от всички мрежи към публичен DNS (8.8.8.8)
+        # бележка: в тази симулация 8.8.8.8 не е в сегмент inet, затова nftables не може да го наложи правилно
+        # записваме го като ограничение в матрицата, не скрито
+        # iifname { $IF_HQ, $IF_VTARNOVO, $IF_GABROVO } oifname $IF_INET ip daddr 203.0.113.53 udp dport 53 accept comment "изискване 5: DNS UDP"
+        # iifname { $IF_HQ, $IF_VTARNOVO, $IF_GABROVO } oifname $IF_INET ip daddr 203.0.113.53 tcp dport 53 accept comment "изискване 5: DNS TCP"
+
+        counter log prefix "[GAMESTUDIO-DROP] "
+    }
+
+    chain output {
+        type filter hook output priority filter; policy accept;
+    }
+}
+
+table ip nat {
+   chain prerouting {
+        type nat hook prerouting priority dstnat; policy accept;
+        # >>> DNAT, ако сценарият публикува услуга към интернет (сегмент inet)
+   }
+   chain postrouting {
+        type nat hook postrouting priority srcnat; policy accept;
+        # >>> masquerade, ако сценарият дава интернет на някой сегмент
+   }
+}
